@@ -1,0 +1,31 @@
+---
+- name: Orchestrate OpenStack infrastructure
+  register: cluster_stack
+  os_stack:
+    name: "{{ cluster_name }}"
+    state: present
+    environment: "{{ cluster_environment }}"
+    template: "{{ cluster_template }}"
+    parameters: "{{ cluster_params }}"
+
+- name: Write inventory file for new cluster
+  template:
+    src: cluster_inventory.j2
+    dest: "{{ cluster_inventory }}"
+
+- name: Extract node groups
+  set_fact:
+    cluster_group: "{{ cluster_stack.stack.outputs | selectattr('output_key', 'equalto', 'cluster_group') | first }}"
+- name: Extract node objects
+  set_fact:
+    cluster_nodes: "{{ cluster_group.output_value | map(attribute='nodes') | list }}" 
+
+- name: Wait for SSH access to the nodes
+  local_action:
+    module: wait_for
+    host: "{{ item.ip }}"
+    port: 22
+    state: started
+    timeout: "{{ cluster_ssh_timeout }}"
+  with_flattened:
+    - "{{ cluster_nodes }}"

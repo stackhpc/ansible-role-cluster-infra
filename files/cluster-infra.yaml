@@ -1,0 +1,49 @@
+---
+heat_template_version: 2016-10-14
+
+description: >
+  Heat stack containing a group of groups of Nova instances.
+  This is the top-level resource of a Cluster-as-a-Service deployment.
+
+parameters:
+  cluster_prefix:
+    type: string
+    label: Instance name prefix
+    default: "cluster"
+  cluster_groups:
+    type: json
+    label: List of dicts defining each group of nodes within the cluster
+  cluster_keypair:
+    type: string
+    label: SSH key pair name for admin access to the cluster nodes
+  cluster_az:
+    type: string
+    label: Availability zone
+    default: nova
+  cluster_net:
+    type: json
+    label: Network names and subnets to which the nodes should be attached
+
+resources:
+  cluster_group:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count:
+        yaql:
+          data: 
+            cluster_groups: { get_param: cluster_groups }
+          expression: $.data.cluster_groups.len()
+      resource_def:
+        type: cluster-group.yaml
+        properties:
+          cluster_prefix: { get_param: cluster_prefix }
+          cluster_keypair: { get_param: cluster_keypair }
+          cluster_az: { get_param: cluster_az }
+          cluster_groups: { get_param: cluster_groups }
+          cluster_net: { get_param: cluster_net }
+          group_idx: "%index%"
+
+outputs:
+  cluster_group:
+    description: Instance data for cluster node groups
+    value: { get_attr: [cluster_group, group_data] }

@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Stig Telfer
+  description: >
+    This role generates software-defined OpenStack infrastructure that can
+    be used for generating complex application topologies on demand.
+  company: StackHPC Ltd
+  license: Apache2
+  min_ansible_version: 2.2
+  platforms:
+    - name: EL
+      versions:
+        - 7
+  galaxy_tags:
+    - cloud
+    - openstack
+    - heat
+
+dependencies:

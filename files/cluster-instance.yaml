@@ -1,0 +1,51 @@
+---
+heat_template_version: 2015-10-15
+
+description: >
+  Heat stack containing a Nova instance.
+
+parameters:
+  name:
+    type: string
+    label: Instance name
+  flavor:
+    type: string
+    label: Flavor name or UUID
+  image:
+    type: string
+    label: Image name or UUID
+  key_name:
+    type: string
+    label: SSH key pair name
+  availability_zone:
+    type: string
+    label: Availability zone
+    default: nova
+  cluster_net:
+    type: json
+    label: Network names and subnets to which the nodes should be attached
+
+resources:
+  instance_net:
+    type: Cluster::NodeNet
+    properties:
+      cluster_net: { get_param: cluster_net }
+
+  instance:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: name }
+      flavor: { get_param: flavor }
+      image: { get_param: image }
+      key_name: { get_param: key_name }
+      networks: { get_attr: [ instance_net, networks ] }
+      availability_zone: { get_param: availability_zone }
+
+outputs:
+  OS::stack_id:
+    description: ID of the Nova instance
+    value: { get_resource: instance }
+
+  instance_data:
+    description: ID of the primary IP
+    value: { 'name': {get_param: name}, 'ip': {get_attr: [instance_net, primary_ip]}, 'id': {get_resource: instance} } 

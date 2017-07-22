@@ -1,0 +1,21 @@
+# Ansible Shade uses OpenStack clients running locally
+[openstack]
+127.0.0.1 ansible_connection=local ansible_python_interpreter=python
+
+{% for output in cluster_stack.stack.outputs %}
+{% if output.output_key == "cluster_group" %}
+[cluster:children]
+{% for group_data in output.output_value %}
+{{ cluster_stack.stack.stack_name}}_{{ group_data.group }}
+{% endfor %}
+
+{% for group_data in output.output_value %}
+[{{ cluster_stack.stack.stack_name}}_{{ group_data.group }}]
+{% for node_data in group_data.nodes %}
+{{node_data.name}} ansible_host={{ node_data.ip }}
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+{% endfor %}
+

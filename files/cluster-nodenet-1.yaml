@@ -1,0 +1,35 @@
+---
+heat_template_version: 2015-10-15
+
+description: >
+  Heat stack template for a stack containing one Neutron port which is on 
+  a named network and subnet (and does not have a floating IP)
+
+parameters:
+  cluster_net:
+    type: json
+    label: Network names and subnets to which the nodes should be attached
+
+resources:
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: [ cluster_net, 0, net ] }
+      security_groups: []
+      fixed_ips:
+        - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
+
+outputs:
+  OS::stack_id:
+    description: The network list
+    value: 
+      - port: { get_resource: port }
+
+  networks:
+    description: The network list
+    value: 
+      - port: { get_resource: port }
+
+  primary_ip:
+    description: ID of the IP assigned on the named cluster network
+    value: { get_attr: [ port, fixed_ips, 0, ip_address ] }
