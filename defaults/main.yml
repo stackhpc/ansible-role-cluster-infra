@@ -3,5 +3,6 @@ cluster_name: "cluster"
 cluster_environment: [ "{{ role_path }}/files/cluster-env.yaml" ]
 cluster_template: "{{ role_path }}/files/cluster-infra.yaml"
 cluster_params: {}
+cluster_roles: []
 cluster_inventory: "{{ playbook_dir }}/inventory_{{ cluster_name }}"
 cluster_ssh_timeout: 600

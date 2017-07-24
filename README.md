@@ -21,7 +21,8 @@ It defaults to `cluster`
 `cluster_params`: Parameters that are passed in to the Heat stack.
 
   * `cluster_prefix`: Name prefix to use for instance hostname construction.
-    `cluster_groups`: JSON-structured list of node groups, each of which is
+
+  * `cluster_groups`: JSON-structured list of node groups, each of which is
      described by a dict, containing the following:
 
     * `name`: A name to refer to this group
@@ -31,6 +32,12 @@ It defaults to `cluster`
 
 `cluster_inventory`: After deployment, an inventory file is generated,
 which can be used in subsequent Ansible-driven configuration.
+
+`cluster_roles`: A set of group assignments to make in the Ansible inventory file
+that is generated.  This parameter is a list of dicts of the form:
+
+  * `name`: Name of the group to define in the Ansible inventory.
+  * `groups`: A list of groups selected from the dict objects supplied to `cluster_groups`, above.
 
 Dependencies
 ------------

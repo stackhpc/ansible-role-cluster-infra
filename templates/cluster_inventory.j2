@@ -18,4 +18,11 @@ localhost ansible_connection=local ansible_python_interpreter=python
 {% endfor %}
 {% endif %}
 {% endfor %}
+# Specific roles for cluster deployment assignments
+{% for role in cluster_roles %}
+[cluster_{{ role.name }}:children]
+{% for group in role.groups %}
+{{ cluster_stack.stack.stack_name}}_{{ group.name }}
+{% endfor %}
 
+{% endfor %}
