@@ -59,7 +59,7 @@ The following playbook generates a guest image and uploads it to OpenStack:
 	    cluster_prefix: "ohpc"
 	    cluster_keypair: "admin_rsa"
 	    cluster_net: 
-              - name: "internal"
+              - net: "internal"
                 subnet: "internal"
 	    cluster_groups:
               - name: "login"
