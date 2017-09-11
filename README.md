@@ -61,6 +61,14 @@ that is generated.  This parameter is a list of dicts of the form:
 Dependencies
 ------------
 
+This role depends on the python `shade` package being installed on the target
+host. The package may be installed in a python virtual environment, in which
+case the path to the virtualenv should be specified in the `cluster_venv`
+variable.
+
+The [stackhpc.os-shade](https://galaxy.ansible.com/stackhpc/os-shade/) role may
+be used to install the python `shade` package.
+
 Example Playbook
 ----------------
 
