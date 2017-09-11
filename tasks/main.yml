@@ -1,4 +1,14 @@
 ---
+- name: Set a fact containing the original python interpreter
+  set_fact:
+    old_python_interpreter: "{{ ansible_python_interpreter | default('/usr/bin/python') }}"
+  when: cluster_venv != None
+
+- name: Set a fact to use the python interpreter in the virtualenv
+  set_fact:
+    ansible_python_interpreter: "{{ cluster_venv }}/bin/python"
+  when: cluster_venv != None
+
 - name: Orchestrate OpenStack infrastructure
   register: cluster_stack
   os_stack:
@@ -7,6 +17,11 @@
     environment: "{{ cluster_environment }}"
     template: "{{ cluster_template }}"
     parameters: "{{ cluster_params }}"
+
+- name: Reset the python interpreter
+  set_fact:
+    ansible_python_interpreter: "{{ old_python_interpreter }}"
+  when: cluster_venv != None
 
 - name: Write inventory file for new cluster
   template:

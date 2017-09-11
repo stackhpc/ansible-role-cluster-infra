@@ -15,6 +15,9 @@ in the environment, or using the `clouds.yaml` format.
 Role Variables
 --------------
 
+`cluster_venv`: Optional path to a python virtualenv in which the python
+`shade` package is installed.
+
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
 

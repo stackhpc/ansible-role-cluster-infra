@@ -1,4 +1,5 @@
 ---
+cluster_venv:
 cluster_name: "cluster"
 cluster_environment: [ "{{ role_path }}/files/cluster-env.yaml" ]
 cluster_template: "{{ role_path }}/files/cluster-infra.yaml"
