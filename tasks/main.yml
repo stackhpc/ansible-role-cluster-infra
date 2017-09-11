@@ -16,6 +16,7 @@
 - name: Extract node groups
   set_fact:
     cluster_group: "{{ cluster_stack.stack.outputs | selectattr('output_key', 'equalto', 'cluster_group') | first }}"
+
 - name: Extract node objects
   set_fact:
     cluster_nodes: "{{ cluster_group.output_value | map(attribute='nodes') | list }}" 
