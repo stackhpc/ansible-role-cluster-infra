@@ -18,6 +18,11 @@ Role Variables
 `cluster_venv`: Optional path to a python virtualenv in which the python
 `shade` package is installed.
 
+`cluster_auth_type`: Optional name of the OpenStack authentication plugin to
+use.
+
+`cluster_auth`: Optional dictionary containing authentication information.
+
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
 

@@ -12,6 +12,8 @@
 - name: Orchestrate OpenStack infrastructure
   register: cluster_stack
   os_stack:
+    auth_type: "{{ cluster_auth_type or omit }}"
+    auth: "{{ cluster_auth or omit }}"
     name: "{{ cluster_name }}"
     state: present
     environment: "{{ cluster_environment }}"
