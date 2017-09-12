@@ -2,6 +2,7 @@
 cluster_venv:
 cluster_auth_type:
 cluster_auth:
+cluster_state: "present"
 cluster_name: "cluster"
 cluster_environment: [ "{{ role_path }}/files/cluster-env.yaml" ]
 cluster_template: "{{ role_path }}/files/cluster-infra.yaml"

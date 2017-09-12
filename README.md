@@ -23,6 +23,9 @@ use.
 
 `cluster_auth`: Optional dictionary containing authentication information.
 
+`cluster_state`: Desired state of the cluster, either `present` or `absent`.
+The default value is `present`.
+
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
 
