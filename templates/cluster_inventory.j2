@@ -26,3 +26,11 @@ localhost ansible_connection=local ansible_python_interpreter=python
 {% endfor %}
 
 {% endfor %}
+
+{% for group, group_vars in cluster_group_vars.items() %}
+[{{ group }}:vars]
+{% for var_name, var_value in group_vars.items() %}
+{{ var_name }}={{ var_value }}
+{% endfor %}
+
+{% endfor %}

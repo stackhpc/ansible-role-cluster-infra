@@ -23,6 +23,9 @@ use.
 
 `cluster_auth`: Optional dictionary containing authentication information.
 
+`cluster_state`: Desired state of the cluster, either `present` or `absent`.
+The default value is `present`.
+
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
 
@@ -57,6 +60,10 @@ that is generated.  This parameter is a list of dicts of the form:
 
   * `name`: Name of the group to define in the Ansible inventory.
   * `groups`: A list of groups selected from the dict objects supplied to `cluster_groups`, above.
+
+`cluster_group_vars`: A dictionary mapping inventory groups to group variables
+to be defined for that group. The group variables for each group are defined as
+a dictionary mapping variable names to their values.
 
 Dependencies
 ------------
@@ -98,6 +105,9 @@ group and a `compute` group.
                 flavor: "compute-A"
                 image: "CentOS7-OpenHPC"
                 num_nodes: 16
+          cluster_group_vars:
+            cluster:
+              ansible_user: centos
 
 Author Information
 ------------------
