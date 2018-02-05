@@ -1,5 +1,5 @@
 ---
-heat_template_version: 2016-10-14
+heat_template_version: pike
 
 description: >
   Heat stack containing a group of groups of Nova instances.

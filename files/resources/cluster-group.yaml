@@ -1,5 +1,5 @@
 ---
-heat_template_version: 2016-10-14
+heat_template_version: pike
 
 description: >
   Heat stack containing a group of Nova instances.
@@ -26,13 +26,25 @@ parameters:
     type: number
     label: Cluster group index
 
+conditions:
+  volume_size_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('volume_size')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  volume_type_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('volume_type')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+
 resources:
   node_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: [cluster_groups, {get_param: group_idx}, num_nodes] }
       resource_def:
-        type: cluster-instance.yaml
+        type: Cluster::Instance
         properties:
           name: 
             list_join: 
@@ -42,6 +54,16 @@ resources:
                 '%index%' ]
           flavor: { get_param: [cluster_groups, {get_param: group_idx}, flavor] }
           image: { get_param: [cluster_groups, {get_param: group_idx}, image] }
+          volume_size:
+            if:
+              - volume_size_set
+              - { get_param: [cluster_groups, {get_param: group_idx}, volume_size] }
+              - 0
+          volume_type:
+            if:
+              - volume_type_set
+              - { get_param: [cluster_groups, {get_param: group_idx}, volume_type] }
+              - ""
           key_name: { get_param: cluster_keypair }
           availability_zone: { get_param: cluster_az }
           cluster_net: { get_param: cluster_net }

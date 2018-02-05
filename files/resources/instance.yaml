@@ -1,5 +1,5 @@
 ---
-heat_template_version: 2015-10-15
+heat_template_version: pike
 
 description: >
   Heat stack containing a Nova instance.
@@ -14,6 +14,12 @@ parameters:
   image:
     type: string
     label: Image name or UUID
+  volume_size:
+    type: number
+    label: Volume size in GB
+  volume_type:
+    type: string
+    label: Volume type
   key_name:
     type: string
     label: SSH key pair name

@@ -29,6 +29,15 @@ The default value is `present`.
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
 
+`cluster_environment_nodenet`: An environment file specifying the resource to
+use for the per-node network, `Cluster:NodeNet`.
+
+`cluster_environment_instance`: An environment file specifying the resource to
+use for the instances, `Cluster:Instance`.
+
+`cluster_environment`: A list of environment files to use when creating the
+Heat stack.
+
 `cluster_params`: Parameters that are passed in to the Heat stack.
 
   * `cluster_prefix`: Name prefix to use for instance hostname construction.
