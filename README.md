@@ -64,6 +64,10 @@ Heat stack.
 
     * `net`: Name or UUID of a neutron network to attach the instances to.
     * `subnet`: Name or UUID of a neutron subnet to attach the instances to.
+    * `security_groups`: Optional list of names or UUIDs of security groups to
+      add the instances' ports to.
+    * `floating_net`: Optional name or UUID of a neutron network to attach
+      floating IPs to when the `nodenet-w-fip.yaml` environment is used.
 
 `cluster_inventory`: After deployment, an inventory file is generated,
 which can be used in subsequent Ansible-driven configuration.
