@@ -49,6 +49,10 @@ Heat stack.
     * `flavor`: The name or UUID of an instance flavor to use for deploying this group.
     * `image`: The name or UUID of an image to use for deploying this group.
     * `num_nodes`: The number of nodes to create within this group.
+    * `volume_size`: Optional size in GB of volumes used to boot instances in
+      this group when the `instance-w-volume.yaml` environment is used.
+    * `volume_type`: Optional type of volumes used to boot instances in this
+      group when the `instance-w-volume.yaml` environment is used.
 
   * `cluster_keypair`: Name of an SSH key pair to use to access the instances.
 
