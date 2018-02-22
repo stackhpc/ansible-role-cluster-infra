@@ -1,5 +1,5 @@
 ---
-heat_template_version: 2015-10-15
+heat_template_version: pike
 
 description: >
   Heat stack template for a stack containing one Neutron port which is on 
@@ -10,12 +10,23 @@ parameters:
     type: json
     label: Network names and subnets to which the nodes should be attached
 
+conditions:
+  security_groups_set:
+    yaql:
+      expression: $.data.cluster_net.containsKey('security_groups')
+      data:
+        cluster_net: { get_param: [ cluster_net, 0 ] }
+
 resources:
   port:
     type: OS::Neutron::Port
     properties:
       network: { get_param: [ cluster_net, 0, net ] }
-      security_groups: []
+      security_groups:
+        if:
+          - security_groups_set
+          - { get_param: [ cluster_net, 0, security_groups ] }
+          - []
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
 

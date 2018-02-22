@@ -4,8 +4,12 @@ cluster_auth_type:
 cluster_auth:
 cluster_state: "present"
 cluster_name: "cluster"
-cluster_environment: [ "{{ role_path }}/files/cluster-env.yaml" ]
-cluster_template: "{{ role_path }}/files/cluster-infra.yaml"
+cluster_environment_nodenet: "{{ role_path }}/files/environments/nodenet-1.yaml"
+cluster_environment_instance: "{{ role_path }}/files/environments/instance.yaml"
+cluster_environment:
+  - "{{ cluster_environment_nodenet }}"
+  - "{{ cluster_environment_instance }}"
+cluster_template: "{{ role_path }}/files/resources/cluster-infra.yaml"
 cluster_params: {}
 cluster_roles: []
 cluster_group_vars: {}

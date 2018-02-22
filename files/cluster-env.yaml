@@ -1,3 +1,0 @@
----
-resource_registry:
-  Cluster::NodeNet: cluster-nodenet-1.yaml

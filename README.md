@@ -29,6 +29,15 @@ The default value is `present`.
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
 
+`cluster_environment_nodenet`: An environment file specifying the resource to
+use for the per-node network, `Cluster:NodeNet`.
+
+`cluster_environment_instance`: An environment file specifying the resource to
+use for the instances, `Cluster:Instance`.
+
+`cluster_environment`: A list of environment files to use when creating the
+Heat stack.
+
 `cluster_params`: Parameters that are passed in to the Heat stack.
 
   * `cluster_prefix`: Name prefix to use for instance hostname construction.
@@ -40,6 +49,10 @@ It defaults to `cluster`
     * `flavor`: The name or UUID of an instance flavor to use for deploying this group.
     * `image`: The name or UUID of an image to use for deploying this group.
     * `num_nodes`: The number of nodes to create within this group.
+    * `volume_size`: Optional size in GB of volumes used to boot instances in
+      this group when the `instance-w-volume.yaml` environment is used.
+    * `volume_type`: Optional type of volumes used to boot instances in this
+      group when the `instance-w-volume.yaml` environment is used.
 
   * `cluster_keypair`: Name of an SSH key pair to use to access the instances.
 
@@ -51,6 +64,10 @@ It defaults to `cluster`
 
     * `net`: Name or UUID of a neutron network to attach the instances to.
     * `subnet`: Name or UUID of a neutron subnet to attach the instances to.
+    * `security_groups`: Optional list of names or UUIDs of security groups to
+      add the instances' ports to.
+    * `floating_net`: Optional name or UUID of a neutron network to attach
+      floating IPs to when the `nodenet-w-fip.yaml` environment is used.
 
 `cluster_inventory`: After deployment, an inventory file is generated,
 which can be used in subsequent Ansible-driven configuration.
