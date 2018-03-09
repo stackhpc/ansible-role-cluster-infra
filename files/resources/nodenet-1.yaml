@@ -1,5 +1,5 @@
 ---
-heat_template_version: pike
+heat_template_version: newton
 
 description: >
   Heat stack template for a stack containing one Neutron port which is on 
@@ -9,13 +9,13 @@ parameters:
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  security_groups_set_flag:
+    type: boolean
+    label: The nodes have security groups associated with them
+    default: False
 
 conditions:
-  security_groups_set:
-    yaql:
-      expression: $.data.cluster_net.containsKey('security_groups')
-      data:
-        cluster_net: { get_param: [ cluster_net, 0 ] }
+  security_groups_set: { get_param: security_groups_set_flag }
 
 resources:
   port:

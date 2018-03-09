@@ -1,5 +1,5 @@
 ---
-heat_template_version: pike
+heat_template_version: newton
 
 description: >
   Heat stack containing a Nova instance.
@@ -30,12 +30,16 @@ parameters:
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  security_groups_set_flag:
+    type: boolean
+    default: False
 
 resources:
   instance_net:
     type: Cluster::NodeNet
     properties:
       cluster_net: { get_param: cluster_net }
+      security_groups_set_flag: { get_param: security_groups_set_flag }
 
   instance:
     type: OS::Nova::Server

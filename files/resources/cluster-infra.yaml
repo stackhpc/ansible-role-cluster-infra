@@ -1,5 +1,5 @@
 ---
-heat_template_version: pike
+heat_template_version: newton
 
 description: >
   Heat stack containing a group of groups of Nova instances.
@@ -23,6 +23,17 @@ parameters:
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  volume_size_set_flag:
+    type: boolean
+    label: The volume size has been defined, for nodes that are booting from a volume.
+    default: False
+  volume_type_set_flag:
+    type: boolean
+    label: The volume type has been defined, for nodes that are booting from a volume.
+    default: False
+  security_groups_set_flag:
+    type: boolean
+    default: False
 
 resources:
   cluster_group:
@@ -42,6 +53,9 @@ resources:
           cluster_groups: { get_param: cluster_groups }
           cluster_net: { get_param: cluster_net }
           group_idx: "%index%"
+          volume_size_set_flag: { get_param: volume_size_set_flag }
+          volume_type_set_flag: { get_param: volume_type_set_flag }
+          security_groups_set_flag: {  get_param: security_groups_set_flag }
 
 outputs:
   cluster_group:

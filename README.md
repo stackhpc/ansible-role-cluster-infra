@@ -82,6 +82,16 @@ that is generated.  This parameter is a list of dicts of the form:
 to be defined for that group. The group variables for each group are defined as
 a dictionary mapping variable names to their values.
 
+Specifically for pre-Pike versions, we must also supply some flags that are
+auto-detected in the Pike release of Heat:
+
+  * `volume_size_set_flag`: The volume size has been defined, for nodes that are booting
+    from a volume.  Defaults to False.
+  * `volume_type_set_flag`: The volume type has been defined, for nodes that are booting
+    from a volume.  Defaults to False.
+  * `security_groups_set_flag`: The nodes have security groups associated with them.
+    Defaults to False.
+
 Dependencies
 ------------
 

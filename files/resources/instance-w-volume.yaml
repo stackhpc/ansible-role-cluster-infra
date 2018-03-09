@@ -1,5 +1,5 @@
 ---
-heat_template_version: pike
+heat_template_version: newton
 
 description: >
   Heat stack containing a Nova instance.

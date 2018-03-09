@@ -1,5 +1,5 @@
 ---
-heat_template_version: pike
+heat_template_version: newton
 
 description: >
   Heat stack containing a group of Nova instances.
@@ -25,18 +25,21 @@ parameters:
   group_idx:
     type: number
     label: Cluster group index
+  volume_size_set_flag:
+    type: boolean
+    label: The volume size has been defined, for nodes that are booting from a volume.
+    default: False
+  volume_type_set_flag:
+    type: boolean
+    label: The volume type has been defined, for nodes that are booting from a volume.
+    default: False
+  security_groups_set_flag:
+    type: boolean
+    default: False
 
 conditions:
-  volume_size_set:
-    yaql:
-      expression: $.data.cluster_group.containsKey('volume_size')
-      data:
-        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
-  volume_type_set:
-    yaql:
-      expression: $.data.cluster_group.containsKey('volume_type')
-      data:
-        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  volume_size_set: { get_param: volume_size_set_flag }
+  volume_type_set: { get_param: volume_type_set_flag }
 
 resources:
   node_group:
@@ -67,6 +70,7 @@ resources:
           key_name: { get_param: cluster_keypair }
           availability_zone: { get_param: cluster_az }
           cluster_net: { get_param: cluster_net }
+          security_groups_set_flag: { get_param: security_groups_set_flag }
 
 outputs:
   group_data:
