@@ -2,6 +2,7 @@
 cluster_venv:
 cluster_auth_type:
 cluster_auth:
+cluster_cloud:
 cluster_state: "present"
 cluster_name: "cluster"
 cluster_environment_nodenet: "{{ role_path }}/files/environments/nodenet-1.yaml"

@@ -23,6 +23,8 @@ use.
 
 `cluster_auth`: Optional dictionary containing authentication information.
 
+`cluster_cloud`: Optional name of the OpenStack client config cloud name to use.
+
 `cluster_state`: Desired state of the cluster, either `present` or `absent`.
 The default value is `present`.
 
