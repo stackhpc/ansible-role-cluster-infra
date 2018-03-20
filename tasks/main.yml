@@ -14,6 +14,7 @@
   os_stack:
     auth_type: "{{ cluster_auth_type or omit }}"
     auth: "{{ cluster_auth or omit }}"
+    cloud: "{{ cluster_cloud or omit }}"
     name: "{{ cluster_name }}"
     state: "{{ cluster_state }}"
     environment: "{{ cluster_environment }}"
