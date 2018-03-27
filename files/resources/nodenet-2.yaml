@@ -1,0 +1,63 @@
+---
+heat_template_version: pike
+
+description: >
+  Heat stack template for a stack containing two Neutron ports.
+  Each is on a named network and subnet (and does not have a floating IP).
+  The first port listed is considered a primary interface, and the IP 
+  associated with the first port is used for subsequent interaction with
+  the node.
+
+parameters:
+  cluster_net:
+    type: json
+    label: Network names and subnets to which the nodes should be attached
+
+conditions:
+  security_groups_set:
+    yaql:
+      expression: $.data.cluster_net.containsKey('security_groups')
+      data:
+        cluster_net: { get_param: [ cluster_net, 0 ] }
+
+resources:
+  port1:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: [ cluster_net, 0, net ] }
+      security_groups:
+        if:
+          - security_groups_set
+          - { get_param: [ cluster_net, 0, security_groups ] }
+          - []
+      fixed_ips:
+        - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
+
+  port2:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: [ cluster_net, 1, net ] }
+      security_groups:
+        if:
+          - security_groups_set
+          - { get_param: [ cluster_net, 1, security_groups ] }
+          - []
+      fixed_ips:
+        - subnet_id: { get_param: [ cluster_net, 1, subnet ] }
+
+outputs:
+  OS::stack_id:
+    description: The network list
+    value: 
+      - port1: { get_resource: port1 }
+      - port2: { get_resource: port2 }
+
+  networks:
+    description: The network list
+    value: 
+      - port: { get_resource: port1 }
+      - port: { get_resource: port2 }
+
+  primary_ip:
+    description: ID of the IP assigned on the named cluster network
+    value: { get_attr: [ port1, fixed_ips, 0, ip_address ] }
