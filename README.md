@@ -23,6 +23,8 @@ use.
 
 `cluster_auth`: Optional dictionary containing authentication information.
 
+`cluster_cloud`: Optional name of the OpenStack client config cloud name to use.
+
 `cluster_state`: Desired state of the cluster, either `present` or `absent`.
 The default value is `present`.
 
@@ -48,6 +50,9 @@ Heat stack.
     * `name`: A name to refer to this group
     * `flavor`: The name or UUID of an instance flavor to use for deploying this group.
     * `image`: The name or UUID of an image to use for deploying this group.
+    * `user`: The name of a cloud user for which SSH keys have been provisioned and
+      passwordless sudo has been configured.  Could be (for example), `centos`, `debian`
+      or `ubuntu`.
     * `num_nodes`: The number of nodes to create within this group.
     * `volume_size`: Optional size in GB of volumes used to boot instances in
       this group when the `instance-w-volume.yaml` environment is used.

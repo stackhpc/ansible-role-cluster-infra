@@ -14,6 +14,7 @@
   os_stack:
     auth_type: "{{ cluster_auth_type or omit }}"
     auth: "{{ cluster_auth or omit }}"
+    cloud: "{{ cluster_cloud or omit }}"
     name: "{{ cluster_name }}"
     state: "{{ cluster_state }}"
     environment: "{{ cluster_environment }}"
@@ -26,6 +27,11 @@
   when: cluster_venv != None
 
 - block:
+    - name: Ensure cluster inventory directory exists
+      file:
+        path: "{{ cluster_inventory | dirname }}"
+        state: directory
+
     - name: Write inventory file for new cluster
       template:
         src: cluster_inventory.j2
