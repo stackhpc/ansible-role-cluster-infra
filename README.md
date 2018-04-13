@@ -64,6 +64,9 @@ Heat stack.
   * `cluster_az`: Name of the availability zone in which to create the
     instances.
 
+  * `cluster_config_drive`: Whether to provide metadata via a config drive.
+    Default is `false`.
+
   * `cluster_net`: JSON-structure list of networks, each of which is described
     by a dict, containing the following:
 
