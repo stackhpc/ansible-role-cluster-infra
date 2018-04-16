@@ -27,6 +27,10 @@ parameters:
     type: string
     label: Availability zone
     default: nova
+  config_drive:
+    type: boolean
+    label: Whether to provide metadata via a configdrive
+    default: false
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
@@ -46,6 +50,7 @@ resources:
       key_name: { get_param: key_name }
       networks: { get_attr: [ instance_net, networks ] }
       availability_zone: { get_param: availability_zone }
+      config_drive: { get_param: config_drive }
 
 outputs:
   OS::stack_id:

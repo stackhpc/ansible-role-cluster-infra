@@ -19,6 +19,10 @@ parameters:
     type: string
     label: Availability zone
     default: nova
+  cluster_config_drive:
+    type: boolean
+    label: Whether to provide metadata via a configdrive
+    default: false
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
@@ -66,6 +70,7 @@ resources:
               - ""
           key_name: { get_param: cluster_keypair }
           availability_zone: { get_param: cluster_az }
+          config_drive: { get_param: cluster_config_drive }
           cluster_net: { get_param: cluster_net }
 
 outputs:
