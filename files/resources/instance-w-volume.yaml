@@ -37,7 +37,7 @@ parameters:
 
 resources:
   instance_net:
-    type: Cluster::NodeNet
+    type: Cluster::NodeNet1WithFIP
     properties:
       cluster_net: { get_param: cluster_net }
 

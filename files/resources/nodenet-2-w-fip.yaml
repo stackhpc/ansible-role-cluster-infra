@@ -1,0 +1,75 @@
+---
+heat_template_version: pike
+
+description: >
+  Heat stack template for a stack containing one Neutron port which is on
+  a named network and subnet. A floating IP is created for the port.
+
+parameters:
+  cluster_net:
+    type: json
+    label: Network names and subnets to which the nodes should be attached
+
+conditions:
+  security_groups_set:
+    yaql:
+      expression: $.data.cluster_net.containsKey('security_groups')
+      data:
+        cluster_net: { get_param: [ cluster_net, 0 ] }
+
+resources:
+
+  port1:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: [ cluster_net, 0, net ] }
+      security_groups:
+        if:
+          - security_groups_set
+          - { get_param: [ cluster_net, 0, security_groups ] }
+          - []
+      fixed_ips:
+        - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
+
+  port2:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: [ cluster_net, 1, net ] }
+      security_groups:
+        - []
+      fixed_ips:
+        - subnet_id: { get_param: [ cluster_net, 1, subnet ] }
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: [ cluster_net, 0, floating_net ] }
+
+  floating_ip_association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: port }
+
+outputs:
+  OS::stack_id:
+    description: The network list
+    value:
+      - port: { get_resource: port }
+
+  networks:
+    description: The network list
+    value:
+      - port: { get_resource: port }
+
+  internal_ip1:
+    description: ID of the IP assigned on the first named cluster network
+    value: { get_attr: [ port, fixed_ips, 0, ip_address ] }
+
+  internal_ip2:
+    description: ID of the IP assigned on the second cluster network
+    value: { get_attr: [ port, fixed_ips, 1, ip_address ] }
+
+  primary_ip:
+    description: ID of the Neutron floating IP
+    value: { get_attr: [ floating_ip, floating_ip_address ] }

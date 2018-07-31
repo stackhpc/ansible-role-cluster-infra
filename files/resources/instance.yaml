@@ -34,10 +34,15 @@ parameters:
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  instance_nodenet:
+    type: string
+    default: "Cluster::NodeNet1"
 
 resources:
   instance_net:
-    type: Cluster::NodeNet
+#   type: Cluster::NodeNet
+#   type: { get_param: instance_nodenet }
+    type: Cluster::NodeNet1WithFIP
     properties:
       cluster_net: { get_param: cluster_net }
 

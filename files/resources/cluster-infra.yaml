@@ -27,6 +27,24 @@ parameters:
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  node_resource:
+    type: string
+    label: Default node resource for the cluster
+    default: "Cluster::Instance"
+    constraints:
+      - allowed_values:
+          - "Cluster::Instance"
+          - "Cluster::InstanceWithVolume"
+  nodenet_resource:
+    type: string
+    label: Default node network resource for the cluster
+    default: "Cluster::NodeNet1"
+    constraints:
+      - allowed_values:
+          - "Cluster::NodeNet1"
+          - "Cluster::NodeNet1WithFIP"
+          - "Cluster::NodeNet2"
+          - "Cluster::NodeNet3"
 
 resources:
   cluster_group:
@@ -46,6 +64,8 @@ resources:
           cluster_groups: { get_param: cluster_groups }
           cluster_config_drive: { get_param: cluster_config_drive }
           cluster_net: { get_param: cluster_net }
+          cluster_node_resource: { get_param: node_resource }
+          cluster_nodenet_resource: { get_param: nodenet_resource }
           group_idx: "%index%"
 
 outputs:
