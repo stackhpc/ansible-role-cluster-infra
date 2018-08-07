@@ -9,20 +9,39 @@
     ansible_python_interpreter: "{{ cluster_venv }}/bin/python"
   when: cluster_venv != None
 
-- debug:
-    var: cluster_params
+# Case 1: we are modifying the cluster.
+- block:
+    - debug:
+        var: cluster_params
 
-- name: Orchestrate OpenStack infrastructure
-  register: cluster_stack
-  os_stack:
-    auth_type: "{{ cluster_auth_type or omit }}"
-    auth: "{{ cluster_auth or omit }}"
-    cloud: "{{ cluster_cloud or omit }}"
-    name: "{{ cluster_name }}"
-    state: "{{ cluster_state }}"
-    environment: "{{ cluster_environment }}"
-    template: "{{ cluster_template }}"
-    parameters: "{{ cluster_params }}"
+    - name: Orchestrate OpenStack infrastructure
+      register: cluster_stack
+      os_stack:
+        auth_type: "{{ cluster_auth_type or omit }}"
+        auth: "{{ cluster_auth or omit }}"
+        cloud: "{{ cluster_cloud or omit }}"
+        name: "{{ cluster_name }}"
+        state: "{{ cluster_state }}"
+        environment: "{{ cluster_environment }}"
+        template: "{{ cluster_template }}"
+        parameters: "{{ cluster_params }}"
+
+    - name: Extract node groups
+      set_fact:
+        cluster_group: "{{ cluster_stack.stack.outputs | selectattr('output_key', 'equalto', 'cluster_group') | first }}"
+  when: cluster_state != 'query'
+
+# Case 2: we are performing a read-only query of the cluster configuration.
+# Read the stack's outputs via the API.
+- block:
+    - name: Gather OpenStack infrastructure information
+      command: openstack stack output show {{ cluster_name }} cluster_group -f json
+      register: stack_output
+
+    - name: Extract node groups
+      set_fact:
+        cluster_group: "{{ stack_output.stdout | from_json }}"
+  when: cluster_state == 'query'
 
 - name: Reset the python interpreter
   set_fact:
@@ -40,10 +59,6 @@
         src: cluster_inventory.j2
         dest: "{{ cluster_inventory }}"
 
-    - name: Extract node groups
-      set_fact:
-        cluster_group: "{{ cluster_stack.stack.outputs | selectattr('output_key', 'equalto', 'cluster_group') | first }}"
-
     - name: Extract node objects
       set_fact:
         cluster_nodes: "{{ cluster_group.output_value | map(attribute='nodes') | list }}" 
@@ -57,4 +72,4 @@
         timeout: "{{ cluster_ssh_timeout }}"
       with_flattened:
         - "{{ cluster_nodes }}"
-  when: cluster_state == 'present'
+  when: cluster_state != 'absent'
