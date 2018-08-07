@@ -2,27 +2,23 @@
 [openstack]
 localhost ansible_connection=local ansible_python_interpreter=python
 
-{% for output in cluster_stack.stack.outputs %}
-{% if output.output_key == "cluster_group" %}
 [cluster:children]
-{% for group_data in output.output_value %}
-{{ cluster_stack.stack.stack_name}}_{{ group_data.group }}
+{% for group_data in cluster_group.output_value %}
+{{ cluster_name }}_{{ group_data.group }}
 {% endfor %}
 
-{% for group_data in output.output_value %}
-[{{ cluster_stack.stack.stack_name}}_{{ group_data.group }}]
+{% for group_data in cluster_group.output_value %}
+[{{ cluster_name}}_{{ group_data.group }}]
 {% for node_data in group_data.nodes %}
 {{node_data.name}} ansible_host={{ node_data.ip }} ansible_user={{ cluster_params.cluster_groups | selectattr("name", "equalto", group_data.group) | map(attribute='user') | join }}
 {% endfor %}
 
 {% endfor %}
-{% endif %}
-{% endfor %}
 # Specific roles for cluster deployment assignments
 {% for role in cluster_roles %}
 [cluster_{{ role.name }}:children]
 {% for group in role.groups %}
-{{ cluster_stack.stack.stack_name}}_{{ group.name }}
+{{ cluster_name}}_{{ group.name }}
 {% endfor %}
 
 {% endfor %}
