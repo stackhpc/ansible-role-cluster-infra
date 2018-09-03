@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: cluster-infra
   author: Stig Telfer
   description: >
     This role generates software-defined OpenStack infrastructure that can
