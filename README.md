@@ -90,6 +90,11 @@ that is generated.  This parameter is a list of dicts of the form:
 to be defined for that group. The group variables for each group are defined as
 a dictionary mapping variable names to their values.
 
+`cluster_environment_group`: An optional Ansible group name to which all
+cluster hosts and localhost will be added. This can be useful if there is a
+single group that represents an environment such as
+development/staging/production.
+
 Dependencies
 ------------
 
