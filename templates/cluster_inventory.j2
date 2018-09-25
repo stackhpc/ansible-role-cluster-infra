@@ -2,6 +2,14 @@
 [openstack]
 localhost ansible_connection=local ansible_python_interpreter=python
 
+{% if cluster_environment_group is not none %}
+[{{ cluster_environment_group }}:children]
+openstack
+cluster
+{% endif %}
+
+{% for output in cluster_stack.stack.outputs %}
+{% if output.output_key == "cluster_group" %}
 [cluster:children]
 {% for group_data in cluster_group.output_value %}
 {{ cluster_name }}_{{ group_data.group }}

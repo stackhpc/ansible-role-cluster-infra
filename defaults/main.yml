@@ -16,3 +16,4 @@ cluster_roles: []
 cluster_group_vars: {}
 cluster_inventory: "{{ playbook_dir }}/inventory-{{ cluster_name }}"
 cluster_ssh_timeout: 600
+cluster_environment_group:
