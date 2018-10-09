@@ -2,3 +2,6 @@
 resource_registry:
   Cluster::InstanceWithVolume: ../resources/instance-w-volume.yaml
   Cluster::Instance: ../resources/instance.yaml
+
+  # Under development
+  Cluster::InstanceMultiNet: ../resources/instance-multi.yaml

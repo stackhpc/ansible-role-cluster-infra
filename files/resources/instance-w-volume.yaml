@@ -31,15 +31,31 @@ parameters:
     type: boolean
     label: Whether to provide metadata via a configdrive
     default: false
-  cluster_net:
+  group_node_ports:
     type: json
-    label: Network names and subnets to which the nodes should be attached
+    label: Nested list of port resources for all nodes in this group
+  group_node_ips:
+    type: json
+    label: List of primary IPs for all nodes in this group
+  node_idx:
+    type: number
+    label: Resource group index of this node
+
+conditions:
+  ports_gt_1: False
+  ports_gt_2: False
+#  ports_gt_1:
+#    yaql:
+#      data:
+#        group_node_ports: { get_param: group_node_ports }
+#      expression: $.data.group_node_ports[0].len() > 1
+#  ports_gt_2:
+#    yaql:
+#      data:
+#        group_node_ports: { get_param: group_node_ports }
+#      expression: $.data.group_node_ports[0].len() > 2
 
 resources:
-  instance_net:
-    type: Cluster::NodeNet1WithFIP
-    properties:
-      cluster_net: { get_param: cluster_net }
 
   instance_volume:
     type: OS::Cinder::Volume
@@ -57,7 +73,35 @@ resources:
         - delete_on_termination: False
           volume_id: { get_resource: instance_volume }
       key_name: { get_param: key_name }
-      networks: { get_attr: [ instance_net, networks ] }
+      # FIXME: I would like to do this but Heat does not parse it:
+      #networks: { get_param: [ group_node_ports, {get_param: node_idx} ] }
+      #networks: 
+      #  list_concat:
+      #    - []
+      #    - { get_param: [ group_node_ports, {get_param: node_idx} ] }
+      #networks: 
+      #  - { get_param: [ group_node_ports, {get_param: node_idx}, 0 ] }
+      #networks:
+      #  yaql:
+      #    data:
+      #      group_node_ports: { get_param: group_node_ports }
+      #      node_idx: { get_param: node_idx }
+      #    expression: $.data.group_node_ports[$.data.node_idx]
+      #
+      # FIXME: this works but is obviously limited to one port:
+      #networks:
+      #  - port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }
+      networks:
+        list_concat:
+          - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }]
+          - if:
+            - ports_gt_1
+            - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 1, port ] }]
+            - []
+          - if:
+            - ports_gt_2
+            - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 2, port ] }]
+            - []
       availability_zone: { get_param: availability_zone }
       config_drive: { get_param: config_drive }
 
@@ -68,4 +112,7 @@ outputs:
 
   instance_data:
     description: ID of the primary IP
-    value: { 'name': {get_param: name}, 'ip': {get_attr: [instance_net, primary_ip]}, 'id': {get_resource: instance} } 
+    value: 
+      name: {get_param: name}
+      ip: {get_param: [group_node_ips, {get_param: node_idx}]}
+      id: {get_resource: instance} 

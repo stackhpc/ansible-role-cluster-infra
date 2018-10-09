@@ -24,12 +24,7 @@ resources:
   node_ports:
     type: OS::Heat::ResourceGroup
   properties:
-    count: 
-      yaql:
-        data: 
-          cluster_groups: { get_param: nodegroup_networks }
-        expression: $.data.cluster_groups.len()
- 
+    count: { 
   port1:
     type: OS::Neutron::Port
     properties:
