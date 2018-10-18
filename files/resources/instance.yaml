@@ -41,29 +41,6 @@ parameters:
     type: number
     label: Resource group index of this node
 
-conditions:
-  ports_gt_1_yaql:
-    yaql:
-      data:
-        group_node_ports: { get_param: group_node_ports }
-      expression: $.data.group_node_ports[0].len() > 1
-  ports_gt_1:
-    not:
-      equals:
-      - ports_gt_1_yaql
-      - False
-
-  ports_gt_2_yaql:
-    yaql:
-      data:
-        group_node_ports: { get_param: group_node_ports }
-      expression: $.data.group_node_ports[0].len() > 2
-  ports_gt_2:
-    not:
-      equals:
-      - ports_gt_2_yaql
-      - False
-
 resources:
 
   instance:
@@ -73,36 +50,10 @@ resources:
       flavor: { get_param: flavor }
       image: { get_param: image }
       key_name: { get_param: key_name }
-      # FIXME: I would like to do this but Heat does not parse it:
-      networks: { get_param: [ group_node_ports, {get_param: node_idx} ] }
-      #networks: 
-      #  list_concat:
-      #    - []
-      #    - { get_param: [ group_node_ports, {get_param: node_idx} ] }
-      #networks: 
-      #  - { get_param: [ group_node_ports, {get_param: node_idx}, 0 ] }
-      #networks:
-      #  yaql:
-      #    data:
-      #      group_node_ports: { get_param: group_node_ports }
-      #      node_idx: { get_param: node_idx }
-      #    expression: $.data.group_node_ports[$.data.node_idx]
-      #
-      # FIXME: this works but is obviously limited to one port:
-      #networks:
-      #  - port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }
-      #networks:
-      #  list_concat:
-      #    - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }]
-      #    - if:
-      #      - ports_gt_1_yaql
-      #      - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 1, port ] }]
-      #      - []
-      #    - if:
-      #      - False
-      #      - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 2, port ] }]
-      #      - []
-          
+      networks:
+        yaql:
+          expression: "$.data != '' and $.data.select({'port' => $.port}) or []"
+          data: {get_param: [group_node_ports, {get_param: node_idx}]}
       availability_zone: { get_param: availability_zone }
       config_drive: { get_param: config_drive }
 
