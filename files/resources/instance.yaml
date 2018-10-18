@@ -74,7 +74,7 @@ resources:
       image: { get_param: image }
       key_name: { get_param: key_name }
       # FIXME: I would like to do this but Heat does not parse it:
-      #networks: { get_param: [ group_node_ports, {get_param: node_idx} ] }
+      networks: { get_param: [ group_node_ports, {get_param: node_idx} ] }
       #networks: 
       #  list_concat:
       #    - []
@@ -89,8 +89,8 @@ resources:
       #    expression: $.data.group_node_ports[$.data.node_idx]
       #
       # FIXME: this works but is obviously limited to one port:
-      networks:
-        - port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }
+      #networks:
+      #  - port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }
       #networks:
       #  list_concat:
       #    - [port: { get_param: [ group_node_ports, {get_param: node_idx}, 0, port ] }]
@@ -117,4 +117,3 @@ outputs:
       name: {get_param: name}
       ip: {get_param: [group_node_ips, {get_param: node_idx}]}
       id: {get_resource: instance} 
-      ports_gt_1: {equals: [ports_gt_1_yaql, True]}
