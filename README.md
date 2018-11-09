@@ -25,8 +25,10 @@ use.
 
 `cluster_cloud`: Optional name of the OpenStack client config cloud name to use.
 
-`cluster_state`: Desired state of the cluster, either `present` or `absent`.
-The default value is `present`.
+`cluster_state`: Desired state of the cluster, one of `present`, `absent`, or
+`query`.  The default value is `present`. If the value is `query`, the cluster
+will not be updated, but its configuration will be queried and an Ansible
+inventory generated.
 
 `cluster_name`: Name to give the Heat stack
 It defaults to `cluster`
