@@ -8,8 +8,6 @@ openstack
 cluster
 {% endif %}
 
-{% for output in cluster_stack.stack.outputs %}
-{% if output.output_key == "cluster_group" %}
 [cluster:children]
 {% for group_data in cluster_group.output_value %}
 {{ cluster_name }}_{{ group_data.group }}
