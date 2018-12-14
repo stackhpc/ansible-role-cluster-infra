@@ -6,9 +6,16 @@ description: >
   a named network and subnet. A floating IP is created for the port.
 
 parameters:
+  node_idx:
+    type: number
+    label: Node index within cluster group
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  cluster_fips:
+    type: json
+    label: List of UUIDs of prealloacted floating IPs
+    default: []
 
 conditions:
   security_groups_set:

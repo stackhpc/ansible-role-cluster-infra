@@ -69,6 +69,11 @@ conditions:
       expression: $.data.cluster_group.containsKey('nodenet_resource')
       data:
         cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  nodenet_fips_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('nodenet_fips')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
 
 resources:
   port_group:
@@ -83,6 +88,12 @@ resources:
             - { get_param: cluster_nodenet_resource }
         properties:
           cluster_net: { get_param: cluster_net }
+          cluster_fips:
+            if:
+              - nodenet_fips_set
+              - { get_param: [cluster_groups, {get_param: group_idx}, nodenet_fips ] }
+              - []
+          node_idx: "%index%"
 
   node_group:
     type: OS::Heat::ResourceGroup
