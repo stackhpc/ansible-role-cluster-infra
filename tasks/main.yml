@@ -11,9 +11,6 @@
 
 # Case 1: we are modifying the cluster.
 - block:
-    - debug:
-        var: cluster_params
-
     - name: Orchestrate OpenStack infrastructure
       register: cluster_stack
       os_stack:

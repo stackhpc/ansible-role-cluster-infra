@@ -2,15 +2,21 @@
 [openstack]
 localhost ansible_connection=local ansible_python_interpreter=python
 
+{% if cluster_environment_group is not none %}
+[{{ cluster_environment_group }}:children]
+openstack
+cluster
+{% endif %}
+
 [cluster:children]
 {% for group_data in cluster_group.output_value %}
 {{ cluster_name }}_{{ group_data.group }}
 {% endfor %}
 
 {% for group_data in cluster_group.output_value %}
-[{{ cluster_name}}_{{ group_data.group }}]
+[{{ cluster_name }}_{{ group_data.group }}]
 {% for node_data in group_data.nodes %}
-{{node_data.name}} ansible_host={{ node_data.ip }} ansible_user={{ cluster_groups | selectattr("name", "equalto", group_data.group) | map(attribute='user') | join }}
+{{ node_data.name }} ansible_host={{ node_data.ip }} ansible_user={{ cluster_params.cluster_groups | selectattr("name", "equalto", group_data.group) | map(attribute='user') | join }}
 {% endfor %}
 
 {% endfor %}
@@ -18,7 +24,7 @@ localhost ansible_connection=local ansible_python_interpreter=python
 {% for role in cluster_roles %}
 [cluster_{{ role.name }}:children]
 {% for group in role.groups %}
-{{ cluster_name}}_{{ group.name }}
+{{ cluster_name }}_{{ group.name }}
 {% endfor %}
 
 {% endfor %}
