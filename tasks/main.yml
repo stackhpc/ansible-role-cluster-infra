@@ -58,15 +58,52 @@
 
     - name: Extract node objects
       set_fact:
-        cluster_nodes: "{{ cluster_group.output_value | map(attribute='nodes') | list }}" 
+        cluster_nodes: "{{ cluster_group.output_value | sum(attribute='nodes', start=[]) }}"
+
+    - name: Prepare access via intermediate gateway
+      block:
+      - name: Extract gateway host
+        set_fact:
+          cluster_gw: "{{ cluster_nodes | selectattr('name', 'equalto', cluster_gw_host) | first }}"
+
+      - name: Add gateway to dynamic inventory
+        add_host:
+          hostname: "{{ cluster_gw.ip }}"
+          ansible_host: "{{ cluster_gw.ip }}"
+          ansible_user: "stelfer"
+
+      - name: Wait for direct SSH access to the designated gateway
+        wait_for:
+          host: "{{ cluster_gw.ip }}"
+          port: 22
+          state: started
+          timeout: "{{ cluster_ssh_timeout }}"
+
+      - name: Scan for SSH keys
+        command: ssh-keyscan {{ cluster_gw.ip }}
+        register: keyscan_cluster_gw
+        changed_when: False
+
+      - name: Ensure gateway is in SSH known hosts
+        blockinfile:
+          block: |
+            {% for key in keyscan_cluster_gw.stdout_lines %}
+            {{ key }}
+            {% endfor %}
+          create: true
+          marker: "# P3-APPLIANCES MANAGED BLOCK FOR {{ cluster_name }}"
+          path: "~/.ssh/known_hosts"
+
+      when: cluster_gw_host is defined
 
     - name: Wait for SSH access to the nodes
-      local_action:
-        module: wait_for
+      wait_for:
         host: "{{ item.ip }}"
         port: 22
         state: started
         timeout: "{{ cluster_ssh_timeout }}"
-      with_flattened:
+      with_items:
         - "{{ cluster_nodes }}"
+      delegate_to: "{{ cluster_gw.ip | default('localhost') }}"
+
   when: cluster_state != 'absent'
