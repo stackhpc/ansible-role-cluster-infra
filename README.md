@@ -34,10 +34,15 @@ inventory generated.
 It defaults to `cluster`
 
 `cluster_environment_nodenet`: An environment file specifying the resource to
-use for the per-node network, `Cluster:NodeNet`.
+use for the per-node network resource, `Cluster::NodeNet`. *NOTE*: This option is
+deprecated, in favour of resources for defining `nodenet_resource` within groups
+and a global default resource using `nodenet_resource` within `cluster_params`.
 
 `cluster_environment_instance`: An environment file specifying the resource to
-use for the instances, `Cluster:Instance`.
+use for the instances, `Cluster::Instance`. *NOTE*: This option is deprecated,
+in favour of resources for specific groups through adding a definition for
+`node_resource` to the group, and a global default resource through
+defining `node_resource` whithin `cluster_params`.
 
 `cluster_environment`: A list of environment files to use when creating the
 Heat stack.
@@ -77,7 +82,32 @@ Heat stack.
     * `security_groups`: Optional list of names or UUIDs of security groups to
       add the instances' ports to.
     * `floating_net`: Optional name or UUID of a neutron network to attach
-      floating IPs to when the `nodenet-w-fip.yaml` environment is used.
+      floating IPs to when the `Cluster::NodeNet1WithFIP` resource is used.
+
+  * `node_resource`: A resource name from the library of custom node resource 
+     names.  This resource type is used as a default for groups which do not
+     override with a specific node resource type.
+
+     Valid options include:
+
+    * `Cluster::Instance`: An instance with ephemeral storage only.
+      This is the default.
+    * `Cluster::InstanceWithVolume`: An instance provisioned with a Cinder volume.
+
+  * `nodenet_resource`: A resource name from the library of custom network 
+    resources for node networking.  This resource type is used for groups that
+    don't specify a network configuration for instances of the group.
+
+    Valid options include:
+
+    * `Cluster::NodeNet1`: A single network with no floating IP associated.
+      This is the default.
+    * `Cluster::NodeNet1WithFIP`: A single network with floating IP allocated
+      and associated with the port.
+    * `Cluster::NodeNet2`: Two network interfaces.  The first two networks listed
+      in `cluster_net` are used.
+    * `Cluster::NodeNet3`: Three network interfaces.  The first three networks listed
+      in `cluster_net` are used.
 
 `cluster_inventory`: After deployment, an inventory file is generated,
 which can be used in subsequent Ansible-driven configuration.
@@ -128,11 +158,17 @@ group and a `compute` group.
             cluster_net:
               - net: "internal"
                 subnet: "internal"
+                floating_net: "external"
+                security_groups:
+                  - "default"
+                  - "slurm"
             cluster_groups:
               - name: "login"
                 flavor: "compute-B"
                 image: "CentOS7-OpenHPC"
                 num_nodes: 1
+                node_resource: "Cluster::InstanceWithVolume"
+                node_resource: "Cluster::NodeNet1WithFIP"
               - name: "compute"
                 flavor: "compute-A"
                 image: "CentOS7-OpenHPC"
@@ -145,3 +181,4 @@ Author Information
 ------------------
 
 - Stig Telfer (<stig@stackhpc.com>)
+- Bharat Kunwar (<bharat@stackhpc.com>)
