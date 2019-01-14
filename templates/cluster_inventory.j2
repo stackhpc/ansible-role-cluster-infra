@@ -21,8 +21,10 @@ cluster
 
 [{{ cluster_name }}_{{ group_data.group }}:vars]
 ansible_user={{ cluster_params.cluster_groups | selectattr("name", "equalto", group_data.group) | map(attribute='user') | join }}
+{% if cluster_gw_group is defined %}
 {% if cluster_gw_group != group_data.group %}
 ansible_ssh_common_args='-o ProxyJump={{ cluster_gw_user }}@{{ cluster_gw_ip }}'
+{% endif %}
 {% endif %}
 
 {% endfor %}
