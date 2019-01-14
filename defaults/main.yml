@@ -5,8 +5,8 @@ cluster_auth:
 cluster_cloud:
 cluster_state: "present"
 cluster_name: "cluster"
-cluster_environment_nodenet: "{{ role_path }}/files/environments/nodenet-1.yaml"
-cluster_environment_instance: "{{ role_path }}/files/environments/instance.yaml"
+cluster_environment_nodenet: "{{ role_path }}/files/environments/nodenet-library.yaml"
+cluster_environment_instance: "{{ role_path }}/files/environments/instance-library.yaml"
 cluster_environment:
   - "{{ cluster_environment_nodenet }}"
   - "{{ cluster_environment_instance }}"

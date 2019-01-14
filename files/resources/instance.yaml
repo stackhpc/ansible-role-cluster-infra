@@ -31,15 +31,17 @@ parameters:
     type: boolean
     label: Whether to provide metadata via a configdrive
     default: false
-  cluster_net:
+  group_node_ports:
     type: json
-    label: Network names and subnets to which the nodes should be attached
+    label: Nested list of port resources for all nodes in this group
+  group_node_ips:
+    type: json
+    label: List of primary IPs for all nodes in this group
+  node_idx:
+    type: number
+    label: Resource group index of this node
 
 resources:
-  instance_net:
-    type: Cluster::NodeNet
-    properties:
-      cluster_net: { get_param: cluster_net }
 
   instance:
     type: OS::Nova::Server
@@ -48,7 +50,10 @@ resources:
       flavor: { get_param: flavor }
       image: { get_param: image }
       key_name: { get_param: key_name }
-      networks: { get_attr: [ instance_net, networks ] }
+      networks:
+        yaql:
+          expression: "$.data != '' and $.data.select({'port' => $.port}) or []"
+          data: {get_param: [group_node_ports, {get_param: node_idx}]}
       availability_zone: { get_param: availability_zone }
       config_drive: { get_param: config_drive }
 
@@ -59,4 +64,7 @@ outputs:
 
   instance_data:
     description: ID of the primary IP
-    value: { 'name': {get_param: name}, 'ip': {get_attr: [instance_net, primary_ip]}, 'id': {get_resource: instance} } 
+    value: 
+      name: {get_param: name}
+      ip: {get_param: [group_node_ips, {get_param: node_idx}]}
+      id: {get_resource: instance} 

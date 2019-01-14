@@ -9,9 +9,16 @@ description: >
   the node.
 
 parameters:
+  node_idx:
+    type: number
+    label: Node index within cluster group
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  cluster_fips:
+    type: json
+    label: List of UUIDs of prealloacted floating IPs
+    default: []
 
 conditions:
   security_groups_set:
@@ -21,6 +28,15 @@ conditions:
         cluster_net: { get_param: [ cluster_net, 0 ] }
 
 resources:
+  node_ports:
+    type: OS::Heat::ResourceGroup
+  properties:
+    count: 
+      yaql:
+        data: 
+          cluster_groups: { get_param: nodegroup_networks }
+        expression: $.data.cluster_groups.len()
+ 
   port1:
     type: OS::Neutron::Port
     properties:

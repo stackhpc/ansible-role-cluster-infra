@@ -26,9 +26,28 @@ parameters:
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
+  cluster_node_resource:
+    type: string
+    label: Cluster-wide default to use for node resources
+    constraints:
+      - allowed_values:
+          - "Cluster::Instance"
+          - "Cluster::InstanceWithVolume"
+  cluster_nodenet_resource:
+    type: string
+    label: Default node network resource for the cluster
+    default: "Cluster::NodeNet"
+    constraints:
+      - allowed_values:
+          - "Cluster::NodeNet"
+          - "Cluster::NodeNet1"
+          - "Cluster::NodeNet1WithFIP"
+          - "Cluster::NodeNet2"
+          - "Cluster::NodeNet3"
   group_idx:
     type: number
     label: Cluster group index
+    
 
 conditions:
   volume_size_set:
@@ -41,14 +60,52 @@ conditions:
       expression: $.data.cluster_group.containsKey('volume_type')
       data:
         cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  node_resource_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('node_resource')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  nodenet_resource_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('nodenet_resource')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  nodenet_fips_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('nodenet_fips')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
 
 resources:
+  port_group:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: [cluster_groups, {get_param: group_idx}, num_nodes] }
+      resource_def:
+        type: 
+          if:
+            - nodenet_resource_set
+            - { get_param: [cluster_groups, {get_param: group_idx}, nodenet_resource ] }
+            - { get_param: cluster_nodenet_resource }
+        properties:
+          cluster_net: { get_param: cluster_net }
+          cluster_fips:
+            if:
+              - nodenet_fips_set
+              - { get_param: [cluster_groups, {get_param: group_idx}, nodenet_fips ] }
+              - []
+          node_idx: "%index%"
+
   node_group:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: [cluster_groups, {get_param: group_idx}, num_nodes] }
       resource_def:
-        type: Cluster::Instance
+        type: 
+          if:
+            - node_resource_set
+            - { get_param: [cluster_groups, {get_param: group_idx}, node_resource ] }
+            - { get_param: cluster_node_resource }
         properties:
           name: 
             list_join: 
@@ -71,7 +128,9 @@ resources:
           key_name: { get_param: cluster_keypair }
           availability_zone: { get_param: cluster_az }
           config_drive: { get_param: cluster_config_drive }
-          cluster_net: { get_param: cluster_net }
+          group_node_ports: { get_attr: [port_group, networks] }
+          group_node_ips: { get_attr: [port_group, primary_ip] }
+          node_idx: "%index%"
 
 outputs:
   group_data:
@@ -79,3 +138,4 @@ outputs:
     value:
       group: { get_param: [cluster_groups, {get_param: group_idx}, name] }
       nodes: { get_attr: [ node_group, instance_data ] }
+      nodenet: { get_attr: [ port_group, networks ] }

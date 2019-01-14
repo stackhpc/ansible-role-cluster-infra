@@ -2,11 +2,8 @@
 heat_template_version: pike
 
 description: >
-  Heat stack template for a stack containing three Neutron ports.
-  Each is on a named network and subnet (and does not have a floating IP).
-  The first port listed is considered a primary interface, and the IP 
-  associated with the first port is used for subsequent interaction with
-  the node.
+  Heat stack template for a stack containing one Neutron port which is on
+  a named network and subnet. A floating IP is created for the port.
 
 parameters:
   node_idx:
@@ -28,6 +25,7 @@ conditions:
         cluster_net: { get_param: [ cluster_net, 0 ] }
 
 resources:
+
   port1:
     type: OS::Neutron::Port
     properties:
@@ -45,40 +43,40 @@ resources:
     properties:
       network: { get_param: [ cluster_net, 1, net ] }
       security_groups:
-        if:
-          - security_groups_set
-          - { get_param: [ cluster_net, 1, security_groups ] }
-          - []
+        - []
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 1, subnet ] }
 
-  port3:
-    type: OS::Neutron::Port
+  floating_ip:
+    type: OS::Neutron::FloatingIP
     properties:
-      network: { get_param: [ cluster_net, 2, net ] }
-      security_groups:
-        if:
-          - security_groups_set
-          - { get_param: [ cluster_net, 2, security_groups ] }
-          - []
-      fixed_ips:
-        - subnet_id: { get_param: [ cluster_net, 2, subnet ] }
+      floating_network: { get_param: [ cluster_net, 0, floating_net ] }
+
+  floating_ip_association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: port }
 
 outputs:
   OS::stack_id:
     description: The network list
-    value: 
-      - port1: { get_resource: port1 }
-      - port2: { get_resource: port2 }
-      - port2: { get_resource: port3 }
+    value:
+      - port: { get_resource: port }
 
   networks:
     description: The network list
-    value: 
-      - port: { get_resource: port1 }
-      - port: { get_resource: port2 }
-      - port: { get_resource: port3 }
+    value:
+      - port: { get_resource: port }
+
+  internal_ip1:
+    description: ID of the IP assigned on the first named cluster network
+    value: { get_attr: [ port, fixed_ips, 0, ip_address ] }
+
+  internal_ip2:
+    description: ID of the IP assigned on the second cluster network
+    value: { get_attr: [ port, fixed_ips, 1, ip_address ] }
 
   primary_ip:
-    description: ID of the IP assigned on the named cluster network
-    value: { get_attr: [ port1, fixed_ips, 0, ip_address ] }
+    description: ID of the Neutron floating IP
+    value: { get_attr: [ floating_ip, floating_ip_address ] }

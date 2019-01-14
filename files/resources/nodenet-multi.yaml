@@ -2,23 +2,16 @@
 heat_template_version: pike
 
 description: >
-  Heat stack template for a stack containing three Neutron ports.
+  Heat stack template for a stack containing two Neutron ports.
   Each is on a named network and subnet (and does not have a floating IP).
   The first port listed is considered a primary interface, and the IP 
   associated with the first port is used for subsequent interaction with
   the node.
 
 parameters:
-  node_idx:
-    type: number
-    label: Node index within cluster group
   cluster_net:
     type: json
     label: Network names and subnets to which the nodes should be attached
-  cluster_fips:
-    type: json
-    label: List of UUIDs of prealloacted floating IPs
-    default: []
 
 conditions:
   security_groups_set:
@@ -28,6 +21,10 @@ conditions:
         cluster_net: { get_param: [ cluster_net, 0 ] }
 
 resources:
+  node_ports:
+    type: OS::Heat::ResourceGroup
+  properties:
+    count: { 
   port1:
     type: OS::Neutron::Port
     properties:
@@ -52,32 +49,18 @@ resources:
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 1, subnet ] }
 
-  port3:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_param: [ cluster_net, 2, net ] }
-      security_groups:
-        if:
-          - security_groups_set
-          - { get_param: [ cluster_net, 2, security_groups ] }
-          - []
-      fixed_ips:
-        - subnet_id: { get_param: [ cluster_net, 2, subnet ] }
-
 outputs:
   OS::stack_id:
     description: The network list
     value: 
       - port1: { get_resource: port1 }
       - port2: { get_resource: port2 }
-      - port2: { get_resource: port3 }
 
   networks:
     description: The network list
     value: 
       - port: { get_resource: port1 }
       - port: { get_resource: port2 }
-      - port: { get_resource: port3 }
 
   primary_ip:
     description: ID of the IP assigned on the named cluster network
