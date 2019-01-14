@@ -1,5 +1,6 @@
 ---
 resource_registry:
+  Cluster::NodeNet: ../resources/nodenet-1.yaml     # A backwards-compatible default
   Cluster::NodeNet1: ../resources/nodenet-1.yaml
   Cluster::NodeNet1WithFIP: ../resources/nodenet-w-fip.yaml
   Cluster::NodeNet1WithPreallocatedFIP: ../resources/nodenet-w-prealloc-fip.yaml

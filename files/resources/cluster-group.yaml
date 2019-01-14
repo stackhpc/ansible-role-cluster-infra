@@ -36,9 +36,10 @@ parameters:
   cluster_nodenet_resource:
     type: string
     label: Default node network resource for the cluster
-    default: "Cluster::NodeNet1"
+    default: "Cluster::NodeNet"
     constraints:
       - allowed_values:
+          - "Cluster::NodeNet"
           - "Cluster::NodeNet1"
           - "Cluster::NodeNet1WithFIP"
           - "Cluster::NodeNet2"
