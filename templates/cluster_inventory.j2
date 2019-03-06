@@ -1,4 +1,5 @@
 # Ansible Shade uses OpenStack clients running locally
+
 [openstack]
 localhost ansible_connection=local ansible_python_interpreter=python
 
@@ -8,10 +9,20 @@ openstack
 cluster
 {% endif %}
 
+{% if cluster_infra_group is not none %}
+[cluster:children]
+{{ cluster_infra_group }}
+
+[{{ cluster_infra_group }}:children]
+{% for group_data in cluster_group.output_value %}
+{{ cluster_name }}_{{ group_data.group }}
+{% endfor %}
+{% else %}
 [cluster:children]
 {% for group_data in cluster_group.output_value %}
 {{ cluster_name }}_{{ group_data.group }}
 {% endfor %}
+{% endif %}
 
 {% for group_data in cluster_group.output_value %}
 [{{ cluster_name }}_{{ group_data.group }}]

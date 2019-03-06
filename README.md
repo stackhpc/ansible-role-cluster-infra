@@ -127,6 +127,10 @@ cluster hosts and localhost will be added. This can be useful if there is a
 single group that represents an environment such as
 development/staging/production.
 
+`cluster_infra_group`: An optional Ansible group name to which all
+cluster hosts (but not localhost) will be added. This can be useful in a multi-stack
+inventory to select all hosts associated with a specific stack.
+
 Dependencies
 ------------
 
