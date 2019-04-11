@@ -1,0 +1,10 @@
+---
+- name: "Add hosts to inventory"
+  add_host:
+    hostname: "{{ host.name }}"
+    ansible_host: "{{ host.ip }}"
+    ansible_user: "{{ cluster_user }}"
+    ansible_ssh_common_args: "{{ ssh_common_args }}"
+  loop: "{{ hosts }}"
+  loop_control:
+    loop_var: host
