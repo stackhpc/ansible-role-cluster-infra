@@ -115,7 +115,12 @@ Heat stack.
     permitted networks.  This is needed if a port is associated with a gateway node that
     is performing IP routing between subnets.  These should match the format of `allowed_address_pairs`
     [https://docs.openstack.org/heat/rocky/template_guide/openstack.html#OS::Neutron::Port-prop-allowed_address_pairs here].
-    A simple, permissive configuration for `router_networks` would be: `[ ip_address: "0.0.0.0/0" ]`
+    A simple, permissive configuration for `router_networks` would be: 
+    
+```
+    router_networks:
+      - ip_address: "0.0.0.0/0"
+```
 
 `cluster_inventory`: After deployment, an inventory file is generated,
 which can be used in subsequent Ansible-driven configuration.
