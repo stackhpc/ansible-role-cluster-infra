@@ -42,6 +42,7 @@ parameters:
           - "Cluster::NodeNet"
           - "Cluster::NodeNet1"
           - "Cluster::NodeNet1WithFIP"
+          - "Cluster::NodeNet1WithPreallocatedFIP"
           - "Cluster::NodeNet2"
           - "Cluster::NodeNet3"
   group_idx:
@@ -75,6 +76,11 @@ conditions:
       expression: $.data.cluster_group.containsKey('nodenet_fips')
       data:
         cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
+  router_networks_set:
+    yaql:
+      expression: $.data.cluster_group.containsKey('router_networks')
+      data:
+        cluster_group: { get_param: [cluster_groups, {get_param: group_idx}] }
 
 resources:
   port_group:
@@ -93,6 +99,11 @@ resources:
             if:
               - nodenet_fips_set
               - { get_param: [cluster_groups, {get_param: group_idx}, nodenet_fips ] }
+              - []
+          router_networks:
+            if:
+              - router_networks_set
+              - { get_param: [cluster_groups, {get_param: group_idx}, router_networks ] }
               - []
           node_idx: "%index%"
 
