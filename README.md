@@ -12,8 +12,8 @@ The OpenStack APIs should be accessible from the target host.  OpenStack
 Newton or later is required.  Client credentials should have been set
 in the environment, or using the `clouds.yaml` format.
 
-Module Parameters
------------------
+Role Variables
+--------------
 
 `cluster_venv`: Optional path to a python virtualenv in which the python
 `shade` package is installed.
@@ -118,8 +118,8 @@ Heat stack.
     A simple, permissive configuration for `router_networks` would be: 
     
 ```
-    router_networks:
-      - ip_address: "0.0.0.0/0"
+router_networks:
+  - ip_address: "0.0.0.0/0"
 ```
 
 `cluster_inventory`: After deployment, an inventory file is generated,
