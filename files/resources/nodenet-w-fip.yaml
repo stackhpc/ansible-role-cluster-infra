@@ -1,5 +1,5 @@
 ---
-heat_template_version: pike
+heat_template_version: queens
 
 description: >
   Heat stack template for a stack containing one Neutron port which is on
@@ -15,6 +15,10 @@ parameters:
   cluster_fips:
     type: json
     label: List of UUIDs of prealloacted floating IPs
+    default: []
+  router_networks:
+    type: json
+    label: Permit host to route IP traffic from specific networks through this port
     default: []
 
 conditions:
@@ -34,6 +38,7 @@ resources:
           - security_groups_set
           - { get_param: [ cluster_net, 0, security_groups ] }
           - []
+      allowed_address_pairs: { get_param: router_networks }
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
 

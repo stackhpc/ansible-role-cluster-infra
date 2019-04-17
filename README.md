@@ -104,10 +104,23 @@ Heat stack.
       This is the default.
     * `Cluster::NodeNet1WithFIP`: A single network with floating IP allocated
       and associated with the port.
+    * `Cluster::NodeNet1WithPreallocatedFIP`: A single network with floating IP
+      (taken from a pre-allocated and supplied list) and associated with the port.
     * `Cluster::NodeNet2`: Two network interfaces.  The first two networks listed
       in `cluster_net` are used.
     * `Cluster::NodeNet3`: Three network interfaces.  The first three networks listed
       in `cluster_net` are used.
+
+  * `router_networks`: An optional list of IP subnet CIDRs that should be added as
+    permitted networks.  This is needed if a port is associated with a gateway node that
+    is performing IP routing between subnets.  These should match the format of `allowed_address_pairs`
+    [https://docs.openstack.org/heat/rocky/template_guide/openstack.html#OS::Neutron::Port-prop-allowed_address_pairs here].
+    A simple, permissive configuration for `router_networks` would be: 
+    
+```
+router_networks:
+  - ip_address: "0.0.0.0/0"
+```
 
 `cluster_inventory`: After deployment, an inventory file is generated,
 which can be used in subsequent Ansible-driven configuration.
