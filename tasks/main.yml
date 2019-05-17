@@ -41,11 +41,6 @@
         cluster_group: "{{ stack_output.stdout | from_json }}"
   when: cluster_state == 'query'
 
-- name: Reset the python interpreter
-  set_fact:
-    ansible_python_interpreter: "{{ old_python_interpreter }}"
-  when: cluster_venv != None
-
 - block:
     - name: Extract server ids from cluster group output
       set_fact:
@@ -130,3 +125,9 @@
       delegate_to: "{{ cluster_gw_ip | default('localhost') }}"
 
   when: cluster_state in ['present', 'query']
+
+- name: Reset the python interpreter
+  set_fact:
+    ansible_python_interpreter: "{{ old_python_interpreter }}"
+  when: cluster_venv != None
+
