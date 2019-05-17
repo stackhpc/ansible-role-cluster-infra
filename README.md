@@ -12,6 +12,10 @@ The OpenStack APIs should be accessible from the target host.  OpenStack
 Newton or later is required.  Client credentials should have been set
 in the environment, or using the `clouds.yaml` format.
 
+In terms of Python `pip` packages, the requirements are:
+- ansible
+- jmespath (required by `json_query` filte)
+
 Role Variables
 --------------
 
