@@ -26,7 +26,7 @@
     - name: Extract node groups
       set_fact:
         cluster_group: "{{ cluster_stack.stack.outputs | selectattr('output_key', 'equalto', 'cluster_group') | first }}"
-  when: cluster_state != 'query'
+  when: cluster_state in ['present', 'absent']
 
 # Case 2: we are performing a read-only query of the cluster configuration.
 # Read the stack's outputs via the API.
@@ -34,18 +34,34 @@
     - name: Gather OpenStack infrastructure information
       command: openstack stack output show {{ cluster_name }} cluster_group -f json
       register: stack_output
+      changed_when: false
 
     - name: Extract node groups
       set_fact:
         cluster_group: "{{ stack_output.stdout | from_json }}"
   when: cluster_state == 'query'
 
-- name: Reset the python interpreter
-  set_fact:
-    ansible_python_interpreter: "{{ old_python_interpreter }}"
-  when: cluster_venv != None
-
 - block:
+    - name: Extract server ids from cluster group output
+      set_fact:
+        cluster_servers: "{{ cluster_group.output_value | json_query('[*].nodes[*].id') | flatten }}"
+        cluster_interfaces: "{{ cluster_net | map(attribute='net') | list }}"
+
+    - name: Attach interfaces to servers
+      os_server_interface:
+        auth_type: "{{ cluster_auth_type or omit }}"
+        auth: "{{ cluster_auth or omit }}"
+        cloud: "{{ cluster_cloud or omit }}"
+        state: "{{ cluster_state }}"
+        server_id: "{{ item }}"
+        interfaces: "{{ cluster_interfaces }}"
+      with_items: "{{ cluster_servers }}"
+      register: openstack_server_interfaces
+
+    - name: Convert list of interfaces to a dictionary for easy lookup in inventory templating step
+      set_fact:
+        cluster_server_interfaces: "{{ dict(cluster_servers | zip(openstack_server_interfaces.results)) }}"
+
     - name: Extract node objects
       set_fact:
         cluster_nodes: "{{ cluster_group.output_value | sum(attribute='nodes', start=[]) }}"
@@ -108,4 +124,10 @@
             cluster_scan_host: "{{ cluster_gw_name | default(inventory_hostname) }}"
             hosts: "{{ cluster_output_groups_no_gw | default(cluster_group.output_value) | map(attribute='nodes') | flatten }}"
 
-  when: cluster_state != 'absent'
+  when: cluster_state in ['present', 'query']
+
+- name: Reset the python interpreter
+  set_fact:
+    ansible_python_interpreter: "{{ old_python_interpreter }}"
+  when: cluster_venv != None
+
