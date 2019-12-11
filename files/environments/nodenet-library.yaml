@@ -6,3 +6,4 @@ resource_registry:
   Cluster::NodeNet1WithPreallocatedFIP: ../resources/nodenet-w-prealloc-fip.yaml
   Cluster::NodeNet2: ../resources/nodenet-2.yaml
   Cluster::NodeNet3: ../resources/nodenet-3.yaml
+  Cluster::NodeNet2WithFIPSRIOV: ../resources/nodenet-2-w-fip-sriov.yaml
