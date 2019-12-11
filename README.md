@@ -112,6 +112,11 @@ Heat stack.
       (taken from a pre-allocated and supplied list) and associated with the port.
     * `Cluster::NodeNet2`: Two network interfaces.  The first two networks listed
       in `cluster_net` are used.
+    * `Cluster::NodeNet2WithFIPSRIOV`: Two network interfaces.  The first interface
+      has a floating IP attached (using the `floating_net` and `security_groups`).
+      The second interface is configured as an SR-IOV port resource, for
+      high-performance internal networking.  The first two networks listed
+      in `cluster_net` are used.
     * `Cluster::NodeNet3`: Three network interfaces.  The first three networks listed
       in `cluster_net` are used.
 
