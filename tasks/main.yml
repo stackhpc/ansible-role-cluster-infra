@@ -47,6 +47,9 @@
         cluster_servers: "{{ cluster_group.output_value | json_query('[*].nodes[*].id') | flatten }}"
         cluster_interfaces: "{{ cluster_net | map(attribute='net') | list }}"
 
+    - set_fact:
+        cluster_server_interfaces: "{{ dict(cluster_servers | zip(cluster_group.output_value | json_query('[*].nodes[*]') | flatten )) }}"
+
 #    - name: Attach interfaces to servers
 #      os_server_interface:
 #        auth_type: "{{ cluster_auth_type or omit }}"
