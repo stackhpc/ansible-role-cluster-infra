@@ -43,6 +43,8 @@ resources:
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
 
+  # The SR-IOV port.
+  # It might be presumptious to assume there are no security groups here.
   port2:
     type: OS::Neutron::Port
     properties:
@@ -78,5 +80,5 @@ outputs:
       - port: { get_resource: port2 }
 
   primary_ip:
-    description: ID of the IP assigned on the named cluster network
-    value: { get_attr: [ port1, fixed_ips, 0, ip_address ] }
+    description: The primary IP of the instance
+    value: { get_attr: [ floating_ip, floating_ip_address ] }
