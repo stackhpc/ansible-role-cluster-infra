@@ -45,7 +45,7 @@
     - name: Extract server ids from cluster group output
       set_fact:
         cluster_servers: "{{ cluster_group.output_value | json_query('[*].nodes[*].id') | flatten }}"
-        cluster_interfaces: "{{ cluster_net | map(attribute='net') | list }}"
+        cluster_interfaces: "{{ cluster_params.cluster_net | map(attribute='net') | list }}"
 
     - name: Attach interfaces to servers
       os_server_interface:
