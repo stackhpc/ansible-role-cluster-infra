@@ -52,6 +52,11 @@ outputs:
     value: 
       - port: { get_resource: port }
 
+  internal_ip:
+    description: The IP assigned on the named cluster networks
+    value:
+      - { get_attr: [ port, fixed_ips, 0, ip_address ] }
+
   primary_ip:
-    description: ID of the IP assigned on the named cluster network
+    description: The primary IP of the instance
     value: { get_attr: [ port, fixed_ips, 0, ip_address ] }

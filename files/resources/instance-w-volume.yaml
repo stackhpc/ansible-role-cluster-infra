@@ -37,6 +37,9 @@ parameters:
   group_node_ips:
     type: json
     label: List of primary IPs for all nodes in this group
+  group_node_internal_ips:
+    type: json
+    label: List of internal IPs for all nodes in this group
   node_idx:
     type: number
     label: Resource group index of this node
@@ -116,4 +119,5 @@ outputs:
     value: 
       name: {get_param: name}
       ip: {get_param: [group_node_ips, {get_param: node_idx}]}
+      internal_ip: {get_param: [group_node_internal_ips, {get_param: node_idx}]}
       id: {get_resource: instance} 

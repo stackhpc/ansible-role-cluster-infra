@@ -141,6 +141,7 @@ resources:
           config_drive: { get_param: cluster_config_drive }
           group_node_ports: { get_attr: [port_group, networks] }
           group_node_ips: { get_attr: [port_group, primary_ip] }
+          group_node_internal_ips: { get_attr: [port_group, internal_ip] }
           node_idx: "%index%"
 
 outputs:
