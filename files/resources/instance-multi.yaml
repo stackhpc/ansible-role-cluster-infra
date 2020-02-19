@@ -39,7 +39,7 @@ parameters:
     label: List of primary IPs for all nodes in this group
   group_node_ips:
     type: json
-    label: List of internal IPs for all nodes in this group
+    label: List of list of IPs per interface for all nodes in this group
   node_idx:
     type: number
     label: Resource group index of this node

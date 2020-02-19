@@ -53,7 +53,7 @@ outputs:
       - port: { get_resource: port }
 
   node_ips:
-    description: The IP assigned on the named cluster networks
+    description: List of list of IPs assigned on the named cluster networks
     value:
       - - { get_attr: [ port, fixed_ips, 0, ip_address ] }
 
