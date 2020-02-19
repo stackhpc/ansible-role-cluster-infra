@@ -82,8 +82,9 @@ outputs:
   internal_ip:
     description: The IP assigned on the named cluster networks
     value:
-      - { get_attr: [ port1, fixed_ips, 0, ip_address ] }
-      - { get_attr: [ port2, fixed_ips, 0, ip_address ] }
+      - - { get_attr: [ floating_ip, floating_ip_address ] }
+        - { get_attr: [ port1, fixed_ips, 0, ip_address ] }
+      - - { get_attr: [ port2, fixed_ips, 0, ip_address ] }
 
   primary_ip:
     description: The primary IP of the instance
