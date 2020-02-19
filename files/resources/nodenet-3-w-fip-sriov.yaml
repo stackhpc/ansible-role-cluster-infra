@@ -2,11 +2,10 @@
 heat_template_version: pike
 
 description: >
-  Heat stack template for a stack containing two Neutron ports.
-  Each is on a named network and subnet (and does not have a floating IP).
-  The first port listed is considered a primary interface, and the IP 
-  associated with the first port is used for subsequent interaction with
-  the node.
+  Heat stack template for a stack containing one Neutron port which is on
+  a named network and subnet. A floating IP is created for the port.
+  A second port is allocated on another network with SR-IOV port binding.
+  A third port is allocated on another network with SR-IOV port binding.
 
 parameters:
   node_idx:
@@ -45,17 +44,40 @@ resources:
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 0, subnet ] }
 
+  # The SR-IOV port.
+  # It might be presumptious to assume there are no security groups here.
   port2:
     type: OS::Neutron::Port
     properties:
+      admin_state_up: True
       network: { get_param: [ cluster_net, 1, net ] }
-      security_groups:
-        if:
-          - security_groups_set
-          - { get_param: [ cluster_net, 1, security_groups ] }
-          - []
+      binding:vnic_type: direct
+      security_groups: []
       fixed_ips:
         - subnet_id: { get_param: [ cluster_net, 1, subnet ] }
+
+  # The OTHER SR-IOV port.
+  # It might be presumptious to assume there are no security groups here.
+  port3:
+    type: OS::Neutron::Port
+    properties:
+      admin_state_up: True
+      network: { get_param: [ cluster_net, 2, net ] }
+      binding:vnic_type: direct
+      security_groups: []
+      fixed_ips:
+        - subnet_id: { get_param: [ cluster_net, 2, subnet ] }
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: [ cluster_net, 0, floating_net ] }
+
+  floating_ip_association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: port1 }
 
 outputs:
   OS::stack_id:
@@ -63,19 +85,23 @@ outputs:
     value: 
       - port1: { get_resource: port1 }
       - port2: { get_resource: port2 }
+      - port3: { get_resource: port3 }
 
   networks:
     description: The network list
     value: 
       - port: { get_resource: port1 }
       - port: { get_resource: port2 }
+      - port: { get_resource: port3 }
 
   node_ips:
     description: List of list of IPs assigned on the named cluster networks
     value:
-      - - { get_attr: [ port1, fixed_ips, 0, ip_address ] }
+      - - { get_attr: [ floating_ip, floating_ip_address ] }
+        - { get_attr: [ port1, fixed_ips, 0, ip_address ] }
       - - { get_attr: [ port2, fixed_ips, 0, ip_address ] }
+      - - { get_attr: [ port3, fixed_ips, 0, ip_address ] }
 
   primary_ip:
     description: The primary IP of the instance
-    value: { get_attr: [ port1, fixed_ips, 0, ip_address ] }
+    value: { get_attr: [ floating_ip, floating_ip_address ] }
