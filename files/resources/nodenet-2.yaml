@@ -32,15 +32,7 @@ conditions:
         cluster_net: { get_param: [ cluster_net, 0 ] }
 
 resources:
-  node_ports:
-    type: OS::Heat::ResourceGroup
-  properties:
-    count: 
-      yaql:
-        data: 
-          cluster_groups: { get_param: nodegroup_networks }
-        expression: $.data.cluster_groups.len()
- 
+
   port1:
     type: OS::Neutron::Port
     properties:
