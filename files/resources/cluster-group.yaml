@@ -140,8 +140,8 @@ resources:
           availability_zone: { get_param: cluster_az }
           config_drive: { get_param: cluster_config_drive }
           group_node_ports: { get_attr: [port_group, networks] }
-          group_node_ips: { get_attr: [port_group, primary_ip] }
-          group_node_internal_ips: { get_attr: [port_group, internal_ip] }
+          group_primary_ip: { get_attr: [port_group, primary_ip] }
+          group_node_ips: { get_attr: [port_group, node_ips] }
           node_idx: "%index%"
 
 outputs:

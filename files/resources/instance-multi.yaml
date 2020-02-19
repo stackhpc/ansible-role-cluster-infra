@@ -34,10 +34,10 @@ parameters:
   group_node_ports:
     type: json
     label: Nested list of port resources for all nodes in this group
-  group_node_ips:
+  group_primary_ip:
     type: json
     label: List of primary IPs for all nodes in this group
-  group_node_internal_ips:
+  group_node_ips:
     type: json
     label: List of internal IPs for all nodes in this group
   node_idx:
@@ -118,7 +118,7 @@ outputs:
     description: ID of the primary IP
     value: 
       name: {get_param: name}
-      ip: {get_param: [group_node_ips, {get_param: node_idx}]}
-      internal_ip: {get_param: [group_node_internal_ips, {get_param: node_idx}]}
+      ip: {get_param: [group_primary_ip, {get_param: node_idx}]}
+      node_ips: {get_param: [group_node_ips, {get_param: node_idx}]}
       id: {get_resource: instance} 
       ports_gt_1: {equals: [ports_gt_1_yaql, True]}
