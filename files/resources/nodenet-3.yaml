@@ -83,6 +83,13 @@ outputs:
       - port: { get_resource: port2 }
       - port: { get_resource: port3 }
 
+  node_ips:
+    description: List of list of IPs assigned on the named cluster networks
+    value:
+      - - { get_attr: [ port1, fixed_ips, 0, ip_address ] }
+      - - { get_attr: [ port2, fixed_ips, 0, ip_address ] }
+      - - { get_attr: [ port3, fixed_ips, 0, ip_address ] }
+
   primary_ip:
-    description: ID of the IP assigned on the named cluster network
+    description: The primary IP of the instance
     value: { get_attr: [ port1, fixed_ips, 0, ip_address ] }

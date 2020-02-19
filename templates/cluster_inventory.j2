@@ -16,7 +16,7 @@ cluster
 {% for group_data in cluster_group.output_value %}
 [{{ cluster_name }}_{{ group_data.group }}]
 {% for node_data in group_data.nodes %}
-{{ node_data.name }} ansible_host={{ node_data.ip }} server_networks='{{ cluster_server_interfaces[node_data.id].server_networks | to_json }}'
+{{ node_data.name }} ansible_host={{ node_data.ip }} server_networks='{{ dict(cluster_nets | zip(node_data.node_ips)) | to_json }}'
 {% endfor %}
 
 [{{ cluster_name }}_{{ group_data.group }}:vars]
