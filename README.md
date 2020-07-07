@@ -84,9 +84,11 @@ Heat stack.
     * `net`: Name or UUID of a neutron network to attach the instances to.
     * `subnet`: Name or UUID of a neutron subnet to attach the instances to.
     * `security_groups`: Optional list of names or UUIDs of security groups to
-      add the instances' ports to.
+      add the instances' ports to.  Security groups can be present or absent
+      on each listed network.
     * `floating_net`: Optional name or UUID of a neutron network to attach
-      floating IPs to when the `Cluster::NodeNet1WithFIP` resource is used.
+      floating IPs to when the `Cluster::NodeNet1WithFIP` or
+      `Cluster::NodeNet2WithFIP` resources are used.
 
   * `node_resource`: A resource name from the library of custom node resource 
      names.  This resource type is used as a default for groups which do not
@@ -112,6 +114,9 @@ Heat stack.
       (taken from a pre-allocated and supplied list) and associated with the port.
     * `Cluster::NodeNet2`: Two network interfaces.  The first two networks listed
       in `cluster_net` are used.
+    * `Cluster::NodeNet2WithFIP`: Two network interfaces.  The first two networks listed
+      in `cluster_net` are used.  A floating IP will be allocated from the first network
+      and associated with the instance.
     * `Cluster::NodeNet2WithFIPSRIOV`: Two network interfaces.  The first interface
       has a floating IP attached (using the `floating_net` and `security_groups`).
       The second interface is configured as an SR-IOV port resource, for
