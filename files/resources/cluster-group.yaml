@@ -44,7 +44,10 @@ parameters:
           - "Cluster::NodeNet1WithFIP"
           - "Cluster::NodeNet1WithPreallocatedFIP"
           - "Cluster::NodeNet2"
+          - "Cluster::NodeNet2WithFIP"
+          - "Cluster::NodeNet2WithFIPSRIOV"
           - "Cluster::NodeNet3"
+          - "Cluster::NodeNet3WithFIPSRIOV"
   group_idx:
     type: number
     label: Cluster group index
