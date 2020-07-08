@@ -25,11 +25,17 @@ parameters:
     default: []
 
 conditions:
-  security_groups_set:
+  security_groups_port1:
     yaql:
       expression: $.data.cluster_net.containsKey('security_groups')
       data:
         cluster_net: { get_param: [ cluster_net, 0 ] }
+
+  security_groups_port2:
+    yaql:
+      expression: $.data.cluster_net.containsKey('security_groups')
+      data:
+        cluster_net: { get_param: [ cluster_net, 1 ] }
 
 resources:
 
@@ -39,7 +45,7 @@ resources:
       network: { get_param: [ cluster_net, 0, net ] }
       security_groups:
         if:
-          - security_groups_set
+          - security_groups_port1
           - { get_param: [ cluster_net, 0, security_groups ] }
           - []
       fixed_ips:
@@ -51,7 +57,7 @@ resources:
       network: { get_param: [ cluster_net, 1, net ] }
       security_groups:
         if:
-          - security_groups_set
+          - security_groups_port2
           - { get_param: [ cluster_net, 1, security_groups ] }
           - []
       fixed_ips:
